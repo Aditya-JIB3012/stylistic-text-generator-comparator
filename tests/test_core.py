@@ -4,10 +4,36 @@ They start skipped. Remove the `skip` line as you work on each milestone.
 """
 import pytest
 
+from app import core
+from app.corpus import CommentaryCorpus
+
 # Milestone 1: Prepare a small corpus of sports commentary text.
-@pytest.mark.skip(reason="remove this line when you start milestone 1")
-def test_milestone_1():
-    raise NotImplementedError("write the test for milestone 1")
+def test_milestone_1(tmp_path):
+    save_file = str(tmp_path / "corpus.json")
+    result = core.milestone_1(save_path=save_file)
+    
+    assert "sentences" in result
+    assert "tokens" in result
+    assert "vocab" in result
+    assert result["num_sentences"] >= 20
+    assert result["vocab_size"] > 100
+    assert result["num_tokens"] > 200
+    
+    # Check special tokens
+    assert "<pad>" in result["vocab"]
+    assert "<unk>" in result["vocab"]
+    assert "<bos>" in result["vocab"]
+    assert "<eos>" in result["vocab"]
+    
+    # Test encoding / decoding
+    corpus = result["corpus_instance"]
+    encoded = corpus.encode("What a goal!", add_special_tokens=True)
+    decoded = corpus.decode(encoded, skip_special_tokens=True)
+    assert "what a goal" in decoded.lower()
+    
+    # Test saved file on disk
+    loaded = CommentaryCorpus.load(save_file)
+    assert loaded.num_sentences == result["num_sentences"]
 
 
 # Milestone 2: Implement the n-gram model and generate text from it.

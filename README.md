@@ -14,7 +14,7 @@ This project, the "Stylistic Text Generator Comparator," is designed for sports 
 
 Tick these off as you go, and commit after each one.
 
-- [ ] **1. Prepare a small corpus of sports commentary text.**  
+- [x] **1. Prepare a small corpus of sports commentary text.**  
       Hint: Data preprocessing
 - [ ] **2. Implement the n-gram model and generate text from it.**  
       Hint: N-gram modeling

@@ -1,9 +1,17 @@
 """Your code. One stub per milestone; build them in order and keep each one small."""
 
+from app.corpus import CommentaryCorpus
+
 # --- Milestone 1: Prepare a small corpus of sports commentary text.
 # Hint: Data preprocessing
-def milestone_1():  # TODO(milestone 1)
-    raise NotImplementedError("TODO(milestone 1)")
+def milestone_1(save_path: str = "data/commentary_corpus.json") -> dict:
+    """Prepare and preprocess a small corpus of sports commentary text."""
+    corpus = CommentaryCorpus()
+    corpus.save(save_path)
+    result = corpus.to_dict()
+    result["saved_path"] = save_path
+    result["corpus_instance"] = corpus
+    return result
 
 
 # --- Milestone 2: Implement the n-gram model and generate text from it.
