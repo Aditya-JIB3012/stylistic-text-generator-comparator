@@ -16,7 +16,7 @@ Tick these off as you go, and commit after each one.
 
 - [x] **1. Prepare a small corpus of sports commentary text.**  
       Hint: Data preprocessing
-- [ ] **2. Implement the n-gram model and generate text from it.**  
+- [x] **2. Implement the n-gram model and generate text from it.**  
       Hint: N-gram modeling
 - [ ] **3. Load a small pre-trained LLM and implement LoRA adapter injection.**  
       Hint: LoRA adapter injection

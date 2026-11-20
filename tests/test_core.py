@@ -37,9 +37,23 @@ def test_milestone_1(tmp_path):
 
 
 # Milestone 2: Implement the n-gram model and generate text from it.
-@pytest.mark.skip(reason="remove this line when you start milestone 2")
 def test_milestone_2():
-    raise NotImplementedError("write the test for milestone 2")
+    res = core.milestone_2(n=3, prompt="The striker", max_tokens=20, seed=123)
+    
+    assert res["n"] == 3
+    assert "generated_text" in res
+    assert len(res["generated_text"]) > 0
+    assert res["generated_text"].lower().startswith("the striker")
+    assert res["vocab_size"] > 50
+    assert res["sample_perplexity"] > 0.0
+    
+    # Test generation without prompt
+    assert len(res["unprompted_text"]) > 0
+    
+    # Test backoff and perplexity on unseen phrase
+    model = res["model"]
+    unseen_perp = model.perplexity("A totally alien sentence never seen in sports!")
+    assert unseen_perp > 0.0
 
 
 # Milestone 3: Load a small pre-trained LLM and implement LoRA adapter injection.
