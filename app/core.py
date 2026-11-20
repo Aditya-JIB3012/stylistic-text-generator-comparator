@@ -6,6 +6,7 @@ from app.model import SmallCausalLM, LMConfig
 from app.lora import inject_lora, get_trainable_parameters, LoRALinear
 from app.trainer import train_lora
 from app.generator import generate_lora_commentary
+from app.comparator import compare_outputs, render_comparison_report
 
 # --- Milestone 1: Prepare a small corpus of sports commentary text.
 # Hint: Data preprocessing
@@ -164,5 +165,47 @@ def milestone_5(
 
 # --- Milestone 6: Provide a qualitative comparison interface for generated texts from both models.
 # Hint: Text comparison
-def milestone_6():  # TODO(milestone 6)
-    raise NotImplementedError("TODO(milestone 6)")
+def milestone_6(
+    prompt: str = "What an absolute thunderbolt",
+    max_tokens: int = 25,
+    temperature: float = 0.8,
+    seed: int = 42,
+    print_report: bool = True,
+) -> dict:
+    """Run the full pipeline and provide a side-by-side qualitative comparison."""
+    # Prepare corpus
+    corpus_dict = milestone_1()
+    corpus = corpus_dict["corpus_instance"]
+    
+    # Train n-gram model
+    ngram_res = milestone_2(corpus_dict=corpus_dict, n=3, seed=seed)
+    ngram_model = ngram_res["model"]
+    
+    # Build and fine-tune LoRA model
+    lora_trained = milestone_4(corpus_dict=corpus_dict, epochs=10)
+    lora_model = lora_trained["model"]
+    
+    # Compare both models on the prompt
+    comparison = compare_outputs(
+        ngram_model=ngram_model,
+        lora_model=lora_model,
+        corpus=corpus,
+        prompt=prompt,
+        max_tokens_ngram=max_tokens,
+        max_tokens_lora=max_tokens,
+        temperature=temperature,
+        seed=seed,
+    )
+    
+    report = render_comparison_report(comparison)
+    
+    if print_report:
+        print(report)
+    
+    return {
+        "comparison": comparison,
+        "report": report,
+        "ngram_text": comparison.ngram_output.text,
+        "lora_text": comparison.lora_output.text,
+        "analysis": comparison.analysis,
+    }

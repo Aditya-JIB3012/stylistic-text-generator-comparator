@@ -123,8 +123,26 @@ def test_milestone_5():
     assert len(res["unprompted_text"]) > 0
 
 
+from app.comparator import ComparisonResult
+
 # Milestone 6: Provide a qualitative comparison interface for generated texts from both models.
-@pytest.mark.skip(reason="remove this line when you start milestone 6")
 def test_milestone_6():
-    raise NotImplementedError("write the test for milestone 6")
+    res = core.milestone_6(prompt="The striker", max_tokens=15, seed=1, print_report=False)
+    
+    assert "comparison" in res
+    assert "report" in res
+    assert "ngram_text" in res
+    assert "lora_text" in res
+    assert "analysis" in res
+    
+    comp = res["comparison"]
+    assert isinstance(comp, ComparisonResult)
+    assert len(comp.ngram_output.text) > 0
+    assert len(comp.lora_output.text) > 0
+    
+    report = res["report"]
+    assert "COMPARATOR" in report
+    assert "N-gram" in report
+    assert "LoRA" in report
+    assert comp.prompt in report
 

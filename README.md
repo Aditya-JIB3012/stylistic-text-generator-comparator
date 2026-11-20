@@ -24,23 +24,46 @@ Tick these off as you go, and commit after each one.
       Hint: LoRA adapter training
 - [x] **5. Generate text from the LoRA-adapted LLM.**  
       Hint: Text generation
-- [ ] **6. Provide a qualitative comparison interface for generated texts from both models.**  
+- [x] **6. Provide a qualitative comparison interface for generated texts from both models.**  
       Hint: Text comparison
 
 ## Run it
 
-You need Python 3.12 and git.
+You need Python 3.11+ and git.
 
 ```bash
-python3.12 -m venv .venv && source .venv/bin/activate
+# Install dependencies
 pip install -r requirements.txt
-cp .env.example .env        # then choose a model; see the comments inside
+
+# Check the CLI is wired up
 python -m app.cli hello
+
+# Prepare & inspect the corpus
+python -m app.cli corpus
+
+# Generate with the N-gram model
+python -m app.cli ngram --prompt "The goalkeeper" --tokens 30
+
+# Generate with the LoRA-adapted LLM (trains first; takes ~15s)
+python -m app.cli generate --prompt "What an absolute thunderbolt" --epochs 15
+
+# Full side-by-side comparison
+python -m app.cli compare --prompt "The striker" --epochs 15
+
+# Run the full test suite
 pytest
 ```
 
-Your work goes in `app/core.py` (one stub per milestone) and `tests/test_core.py`. The first tests pass already; they
-check the plumbing.
+Your work lives in `app/` and `tests/`. The key modules are:
+- [`app/corpus.py`](app/corpus.py) — corpus preparation & vocabulary
+- [`app/ngram.py`](app/ngram.py) — N-gram model with backoff & perplexity
+- [`app/model.py`](app/model.py) — small causal Transformer LM
+- [`app/lora.py`](app/lora.py) — LoRA layer injection
+- [`app/trainer.py`](app/trainer.py) — LoRA fine-tuning loop
+- [`app/generator.py`](app/generator.py) — LLM text generation
+- [`app/comparator.py`](app/comparator.py) — side-by-side comparison & report
+- [`app/core.py`](app/core.py) — `milestone_1()` through `milestone_6()` stubs (all implemented)
+- [`tests/test_core.py`](tests/test_core.py) — one test per milestone
 
 ## Settings and secrets
 
