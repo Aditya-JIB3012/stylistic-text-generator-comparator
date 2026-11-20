@@ -20,7 +20,7 @@ Tick these off as you go, and commit after each one.
       Hint: N-gram modeling
 - [x] **3. Load a small pre-trained LLM and implement LoRA adapter injection.**  
       Hint: LoRA adapter injection
-- [ ] **4. Fine-tune the LoRA adapter on the sports commentary corpus.**  
+- [x] **4. Fine-tune the LoRA adapter on the sports commentary corpus.**  
       Hint: LoRA adapter training
 - [ ] **5. Generate text from the LoRA-adapted LLM.**  
       Hint: Text generation

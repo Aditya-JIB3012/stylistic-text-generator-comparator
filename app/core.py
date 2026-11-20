@@ -4,6 +4,7 @@ from app.corpus import CommentaryCorpus
 from app.ngram import NGramModel
 from app.model import SmallCausalLM, LMConfig
 from app.lora import inject_lora, get_trainable_parameters, LoRALinear
+from app.trainer import train_lora
 
 # --- Milestone 1: Prepare a small corpus of sports commentary text.
 # Hint: Data preprocessing
@@ -80,8 +81,39 @@ def milestone_3(
 
 # --- Milestone 4: Fine-tune the LoRA adapter on the sports commentary corpus.
 # Hint: LoRA adapter training
-def milestone_4():  # TODO(milestone 4)
-    raise NotImplementedError("TODO(milestone 4)")
+def milestone_4(
+    corpus_dict: dict | None = None,
+    lora_dict: dict | None = None,
+    epochs: int = 12,
+    lr: float = 3e-3,
+    save_adapter_path: str = "data/lora_adapter.pt",
+) -> dict:
+    """Fine-tune the LoRA adapter on the sports commentary corpus."""
+    if corpus_dict is None:
+        corpus_dict = milestone_1()
+    corpus = corpus_dict["corpus_instance"]
+    
+    if lora_dict is None:
+        lora_dict = milestone_3(vocab_size=corpus.vocab_size)
+    model = lora_dict["model"]
+    
+    # Fine-tune LoRA
+    losses = train_lora(
+        model=model,
+        corpus=corpus,
+        epochs=epochs,
+        lr=lr,
+        save_path=save_adapter_path,
+    )
+    
+    return {
+        "model": model,
+        "corpus": corpus,
+        "losses": losses,
+        "initial_loss": losses[0] if losses else 0.0,
+        "final_loss": losses[-1] if losses else 0.0,
+        "adapter_path": save_adapter_path,
+    }
 
 
 # --- Milestone 5: Generate text from the LoRA-adapted LLM.

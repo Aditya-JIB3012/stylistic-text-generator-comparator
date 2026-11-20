@@ -89,10 +89,25 @@ def test_milestone_3():
     assert logits.shape == (1, 4, 200)
 
 
+from pathlib import Path
+from app.lora import load_lora_weights
+
 # Milestone 4: Fine-tune the LoRA adapter on the sports commentary corpus.
-@pytest.mark.skip(reason="remove this line when you start milestone 4")
-def test_milestone_4():
-    raise NotImplementedError("write the test for milestone 4")
+def test_milestone_4(tmp_path):
+    adapter_file = str(tmp_path / "test_lora.pt")
+    res = core.milestone_4(epochs=8, lr=5e-3, save_adapter_path=adapter_file)
+    
+    assert "losses" in res
+    assert len(res["losses"]) == 8
+    # Loss should decrease significantly during training
+    assert res["final_loss"] < res["initial_loss"]
+    
+    # Check that adapter file was saved on disk
+    assert Path(adapter_file).exists()
+    
+    # Check that adapter can be loaded back into a model
+    model = res["model"]
+    load_lora_weights(model, adapter_file)
 
 
 # Milestone 5: Generate text from the LoRA-adapted LLM.
