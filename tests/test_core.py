@@ -111,9 +111,16 @@ def test_milestone_4(tmp_path):
 
 
 # Milestone 5: Generate text from the LoRA-adapted LLM.
-@pytest.mark.skip(reason="remove this line when you start milestone 5")
 def test_milestone_5():
-    raise NotImplementedError("write the test for milestone 5")
+    res = core.milestone_5(prompt="The striker", max_new_tokens=20, seed=99)
+    
+    assert "generated_text" in res
+    assert len(res["generated_text"]) > 0
+    assert "the striker" in res["generated_text"].lower()
+    
+    # Test unprompted generation
+    assert "unprompted_text" in res
+    assert len(res["unprompted_text"]) > 0
 
 
 # Milestone 6: Provide a qualitative comparison interface for generated texts from both models.

@@ -5,6 +5,7 @@ from app.ngram import NGramModel
 from app.model import SmallCausalLM, LMConfig
 from app.lora import inject_lora, get_trainable_parameters, LoRALinear
 from app.trainer import train_lora
+from app.generator import generate_lora_commentary
 
 # --- Milestone 1: Prepare a small corpus of sports commentary text.
 # Hint: Data preprocessing
@@ -118,8 +119,47 @@ def milestone_4(
 
 # --- Milestone 5: Generate text from the LoRA-adapted LLM.
 # Hint: Text generation
-def milestone_5():  # TODO(milestone 5)
-    raise NotImplementedError("TODO(milestone 5)")
+def milestone_5(
+    lora_trained_dict: dict | None = None,
+    prompt: str = "What an absolute thunderbolt",
+    max_new_tokens: int = 25,
+    temperature: float = 0.8,
+    seed: int = 42,
+) -> dict:
+    """Generate text from the fine-tuned LoRA-adapted LLM."""
+    if lora_trained_dict is None:
+        lora_trained_dict = milestone_4(epochs=8)
+    
+    model = lora_trained_dict["model"]
+    corpus = lora_trained_dict["corpus"]
+    
+    generated_text = generate_lora_commentary(
+        model=model,
+        corpus=corpus,
+        prompt=prompt,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        seed=seed,
+    )
+    
+    unprompted_text = generate_lora_commentary(
+        model=model,
+        corpus=corpus,
+        prompt=None,
+        max_new_tokens=max_new_tokens,
+        temperature=temperature,
+        seed=seed + 1,
+    )
+    
+    return {
+        "prompt": prompt,
+        "generated_text": generated_text,
+        "unprompted_text": unprompted_text,
+        "max_new_tokens": max_new_tokens,
+        "temperature": temperature,
+        "model": model,
+        "corpus": corpus,
+    }
 
 
 # --- Milestone 6: Provide a qualitative comparison interface for generated texts from both models.

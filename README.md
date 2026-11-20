@@ -22,7 +22,7 @@ Tick these off as you go, and commit after each one.
       Hint: LoRA adapter injection
 - [x] **4. Fine-tune the LoRA adapter on the sports commentary corpus.**  
       Hint: LoRA adapter training
-- [ ] **5. Generate text from the LoRA-adapted LLM.**  
+- [x] **5. Generate text from the LoRA-adapted LLM.**  
       Hint: Text generation
 - [ ] **6. Provide a qualitative comparison interface for generated texts from both models.**  
       Hint: Text comparison
