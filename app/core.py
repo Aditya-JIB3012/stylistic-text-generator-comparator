@@ -2,6 +2,8 @@
 
 from app.corpus import CommentaryCorpus
 from app.ngram import NGramModel
+from app.model import SmallCausalLM, LMConfig
+from app.lora import inject_lora, get_trainable_parameters, LoRALinear
 
 # --- Milestone 1: Prepare a small corpus of sports commentary text.
 # Hint: Data preprocessing
@@ -51,8 +53,29 @@ def milestone_2(
 
 # --- Milestone 3: Load a small pre-trained LLM and implement LoRA adapter injection.
 # Hint: LoRA adapter injection
-def milestone_3():  # TODO(milestone 3)
-    raise NotImplementedError("TODO(milestone 3)")
+def milestone_3(
+    vocab_size: int = 300,
+    rank: int = 4,
+    alpha: float = 8.0,
+    target_modules: tuple[str, ...] = ("q_proj", "v_proj", "fc1"),
+) -> dict:
+    """Initialize a small pre-trained LLM and inject LoRA adapter matrices."""
+    config = LMConfig(vocab_size=vocab_size, n_embd=64, n_layer=2, n_head=4)
+    model = SmallCausalLM(config)
+    
+    before_stats = get_trainable_parameters(model)
+    model = inject_lora(model, rank=rank, alpha=alpha, target_modules=target_modules)
+    after_stats = get_trainable_parameters(model)
+    
+    return {
+        "model": model,
+        "config": config,
+        "rank": rank,
+        "alpha": alpha,
+        "before_stats": before_stats,
+        "after_stats": after_stats,
+        "trainable_percent": after_stats["trainable_percent"],
+    }
 
 
 # --- Milestone 4: Fine-tune the LoRA adapter on the sports commentary corpus.

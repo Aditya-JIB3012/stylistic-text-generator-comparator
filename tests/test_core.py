@@ -56,10 +56,37 @@ def test_milestone_2():
     assert unseen_perp > 0.0
 
 
+import torch
+from app.lora import LoRALinear
+
 # Milestone 3: Load a small pre-trained LLM and implement LoRA adapter injection.
-@pytest.mark.skip(reason="remove this line when you start milestone 3")
 def test_milestone_3():
-    raise NotImplementedError("write the test for milestone 3")
+    res = core.milestone_3(vocab_size=200, rank=4, alpha=8.0)
+    
+    assert "model" in res
+    assert "before_stats" in res
+    assert "after_stats" in res
+    
+    # Trainable percentage should be significantly reduced (e.g. < 10%)
+    assert res["before_stats"]["trainable_percent"] == 100.0
+    assert res["after_stats"]["trainable_percent"] < 10.0
+    assert res["after_stats"]["trainable_params"] > 0
+    
+    # Check that model contains LoRALinear modules
+    model = res["model"]
+    lora_modules = [m for m in model.modules() if isinstance(m, LoRALinear)]
+    assert len(lora_modules) > 0
+    
+    # Check that base parameters are frozen while lora_A/B require gradients
+    for lora in lora_modules:
+        assert not lora.base_layer.weight.requires_grad
+        assert lora.lora_A.requires_grad
+        assert lora.lora_B.requires_grad
+        
+    # Forward pass works correctly
+    dummy_input = torch.tensor([[5, 10, 15, 20]])
+    logits, _ = model(dummy_input)
+    assert logits.shape == (1, 4, 200)
 
 
 # Milestone 4: Fine-tune the LoRA adapter on the sports commentary corpus.
